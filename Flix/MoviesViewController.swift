@@ -31,12 +31,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     @objc func didPullToRefresh(_ sender: UIRefreshControl) {
-        activityIndicator.startAnimating()
-        self.shadeView(shaded: true)
         fetchMovies {
             sender.endRefreshing()
-            self.shadeView(shaded: false)
-            self.activityIndicator.stopAnimating()
         }
     }
     
@@ -57,18 +53,39 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
+        
+        activityIndicator.startAnimating()
+        self.shadeView(shaded: true)
+        
         let task = session.dataTask(with: request) { (data, response, error) in
             // This will run when the network request returns
             if let error = error {
                 print(error.localizedDescription)
+                self.displayRequestErrorAlert()
+                completion?()
             } else if let data = data {
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
                 self.movies = dataDictionary["results"] as! [[String:Any]]
                 self.tableView.reloadData()
+                self.shadeView(shaded: false)
+                self.activityIndicator.stopAnimating()
                 completion?()
             }
         }
         task.resume()
+    }
+    
+    func displayRequestErrorAlert() {
+        let title = "Cannot Get Movies"
+        let message = "The internet connection appears to be offline"
+        let alert = UIAlertController(title: title, message: message,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Try Again", style: UIAlertActionStyle.default,
+                                      handler:
+            { _ in
+                self.fetchMovies()
+        }))
+        self.present(alert, animated: true, completion: nil)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
