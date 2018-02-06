@@ -11,12 +11,15 @@ import AlamofireImage
 
 let imageTmdb = "https://image.tmdb.org/t/p/w500"
 
-class MoviesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class MoviesViewController: UIViewController, UITableViewDataSource,
+                            UITableViewDelegate, UISearchBarDelegate {
     
+    @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var movies: [[String:Any]] = []
+    var filteredMovies: [[String:Any]] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,6 +27,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         tableView.delegate = self
         tableView.dataSource = self
+        searchBar.delegate = self
         
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
@@ -66,10 +70,11 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
             } else if let data = data {
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
                 self.movies = dataDictionary["results"] as! [[String:Any]]
-                self.tableView.reloadData()
                 self.shadeView(shaded: false)
                 self.activityIndicator.stopAnimating()
+                self.filteredMovies = self.movies
                 completion?()
+                self.tableView.reloadData()
             }
         }
         task.resume()
@@ -96,7 +101,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath)
         let movieCell = cell as! MovieCell
         
-        let movie = movies[indexPath.row]
+        let movie = filteredMovies[indexPath.row]
         if let title = movie["title"] as? String,
             let overview = movie["overview"] as? String,
             let path = movie["poster_path"] as? String {
@@ -109,7 +114,17 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movies.count
+        return filteredMovies.count
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        filteredMovies = searchText.isEmpty ? movies : movies.filter
+            { (movie: [String:Any]) -> Bool in
+                let title = movie["title"] as? String
+                return title?.range(of: searchText, options: .caseInsensitive,
+                                    range: nil, locale: nil) != nil
+        }
+        self.tableView.reloadData()
     }
 
     override func didReceiveMemoryWarning() {
