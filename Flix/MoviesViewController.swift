@@ -126,6 +126,15 @@ class MoviesViewController: UIViewController, UITableViewDataSource,
         }
         self.tableView.reloadData()
     }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let cell = sender as! UITableViewCell
+        if let indexPath = tableView.indexPath(for: cell) {
+            let movie = movies[indexPath.row]
+            let detailVC = segue.destination as! DetailViewController
+            detailVC.movie = movie
+        }        
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
