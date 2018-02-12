@@ -13,7 +13,6 @@
         <!--Tab Bar Controller-->
         <scene sceneID="OwG-Md-3C1">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="aZQ-Im-3pT" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tabBarController id="qbC-r7-mYW" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="cjt-Zh-8VG">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
@@ -25,6 +24,7 @@
                         <segue destination="SRZ-sK-0jr" kind="relationship" relationship="viewControllers" id="Oon-XI-7ML"/>
                     </connections>
                 </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="aZQ-Im-3pT" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1715" y="121"/>
         </scene>
@@ -203,29 +203,33 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RSy-Nd-oIq">
-                                <rect key="frame" x="0.0" y="62" width="375" height="272"/>
+                                <rect key="frame" x="0.0" y="62" width="375" height="214"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="B9X-5d-Qau">
-                                <rect key="frame" x="16" y="248" width="104" height="167"/>
+                                <rect key="frame" x="16" y="204" width="113" height="153"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                <gestureRecognizers/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="MFa-E1-yo4" appends="YES" id="V0i-pL-73I"/>
+                                </connections>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Coco" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yN6-Dl-6CC">
-                                <rect key="frame" x="128" y="344" width="231" height="21"/>
+                                <rect key="frame" x="149" y="289" width="197" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="2017-10-27" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UXh-AZ-rvO">
-                                <rect key="frame" x="128" y="373" width="231" height="21"/>
+                                <rect key="frame" x="149" y="318" width="197" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fvy-UQ-btL">
-                                <rect key="frame" x="16" y="425" width="343" height="222"/>
+                                <rect key="frame" x="16" y="367" width="343" height="222"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <string key="text">Despite his family’s baffling generations-old ban on music, Miguel dreams of becoming an accomplished musician like his idol, Ernesto de la Cruz. Desperate to prove his talent, Miguel finds himself in the stunning and colorful Land of the Dead following a mysterious chain of events. Along the way, he meets charming trickster Hector, and together, they set off on an extraordinary journey to unlock the real story behind Miguel's family history.</string>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -241,10 +245,16 @@
                         <outlet property="overviewLabel" destination="Fvy-UQ-btL" id="OoS-t2-tDO"/>
                         <outlet property="posterImageView" destination="B9X-5d-Qau" id="xYP-Fl-a7Y"/>
                         <outlet property="releaseDateLabel" destination="UXh-AZ-rvO" id="7so-A6-ifq"/>
+                        <outlet property="tapGesture" destination="MFa-E1-yo4" id="fRK-b9-6ps"/>
                         <outlet property="titleLabel" destination="yN6-Dl-6CC" id="1z2-D0-FFf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NSb-bq-Es2" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="MFa-E1-yo4">
+                    <connections>
+                        <action selector="tappedPoster:" destination="s1T-fb-scX" id="LME-LG-e4s"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="896.79999999999995" y="132.68365817091455"/>
         </scene>
@@ -254,6 +264,6 @@
         <image name="superhero_tabbar_item" width="21" height="23"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="djW-GX-96v"/>
+        <segue reference="lLH-Na-0dY"/>
     </inferredMetricsTieBreakers>
 </document>
