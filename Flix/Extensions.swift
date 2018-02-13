@@ -21,3 +21,13 @@ extension UIColor {
     
 }
 
+
+extension UIViewController {
+    func hideViewWithAnimation(view: UIView, duration: Double, hidden: Bool = true) {
+        UIView.transition(with: view, duration: duration, options: .transitionCrossDissolve,
+                          animations:
+            {
+                view.isHidden = hidden
+        }, completion: nil)
+    }
+}

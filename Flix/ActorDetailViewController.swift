@@ -140,12 +140,12 @@ class ActorDetailViewController: UIViewController, UICollectionViewDataSource,
     
     @IBAction func toggledSegmentedControl(_ sender: UISegmentedControl) {
         if sender.selectedSegmentIndex == BIOGRAPHY {
-            collectionView.isHidden = true
-            biographyTextView.isHidden = false
+            self.hideViewWithAnimation(view: collectionView, duration: 0.2, hidden: true)
+            self.hideViewWithAnimation(view: biographyTextView, duration: 0.2, hidden: false)
         }
         else {
-            collectionView.isHidden = false
-            biographyTextView.isHidden = true
+            self.hideViewWithAnimation(view: collectionView, duration: 0.2, hidden: false)
+            self.hideViewWithAnimation(view: biographyTextView, duration: 0.2, hidden: true)
         }
     }
     

@@ -9,7 +9,8 @@
 import Foundation
 import UIKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, UICollectionViewDelegate,
+                            UICollectionViewDataSource {
     
     static let WIDTH_POSTER_RATIO: CGFloat = 0.30
     static let LEFT_INSET: CGFloat = 0.04
@@ -19,25 +20,37 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var releaseDateLabel: UILabel!
-    @IBOutlet weak var overviewLabel: UILabel!
+    @IBOutlet weak var overviewTextView: UITextView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var segmentedControl: UISegmentedControl!
+    
     @IBOutlet var tapGesture: UITapGestureRecognizer!
     
     var movie: [String:Any]?
     var tvShow: [String:Any]?
+    var similarContents: [[String:Any]] = []
     var contentType: Int = 0
     
     var posterImage: UIImage?
     var backdropImage: UIImage?
     
+    let OVERVIEW = 0
+    let SIMILAR = 1
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.isHidden = true
+        collectionView.backgroundColor = .clear
+        calculateCellSize()
         
         posterImageView.isUserInteractionEnabled = true
         
         posterImageView.layer.borderWidth = 2.0
         posterImageView.layer.borderColor = UIColor.white.cgColor
         
-        
+        fetchSimilarContents()
         displayData()
     }
     
@@ -48,8 +61,7 @@ class DetailViewController: UIViewController {
             }
             
             if let overview = movie["overview"] as? String {
-                overviewLabel.text = overview
-                overviewLabel.sizeToFit()
+                overviewTextView.text = overview
             }
             
             if var releaseDate = movie["release_date"] as? String {
@@ -87,8 +99,7 @@ class DetailViewController: UIViewController {
             }
             
             if let overview = show["overview"] as? String {
-                overviewLabel.text = overview
-                overviewLabel.sizeToFit()
+                overviewTextView.text = overview
             }
             
             if var firstAirDate = show["first_air_date"] as? String {
@@ -120,6 +131,46 @@ class DetailViewController: UIViewController {
                 self.repositionComponents()
             }
         }
+    }
+    
+    
+    func fetchSimilarContents() {
+        var url: URL!
+        if let movie = movie {
+            let id = movie["id"] as! Int
+            url = URL(string: "https://api.themoviedb.org/3/movie/\(id)/similar?api_key=\(api_key)&language=en-US")!
+        }
+        else if let tvShow = tvShow {
+            let id = tvShow["id"] as! Int
+            url = URL(string: "https://api.themoviedb.org/3/tv/\(id)?api_key=\(api_key)&language=en-US")!
+        }
+        
+        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
+        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
+        
+        let task = session.dataTask(with: request) { (data, response, error) in
+            // This will run when the network request returns
+            if let error = error {
+                print(error.localizedDescription)
+            } else if let data = data {
+                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+                self.similarContents = dataDictionary["results"] as! [[String:Any]]
+                self.collectionView.reloadData()
+            }
+        }
+        task.resume()
+    }
+    
+    
+    func calculateCellSize() {
+        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
+        let cellsPerLine: CGFloat = 2
+        layout.minimumInteritemSpacing = 10.0
+        layout.minimumLineSpacing = 10.0
+        let interItemSpacingTotal = layout.minimumInteritemSpacing * (cellsPerLine - 1)
+        let width = collectionView.frame.size.width / cellsPerLine -
+            interItemSpacingTotal / cellsPerLine
+        layout.itemSize = CGSize(width: width, height: width * 3 / 2)
     }
     
     // Return height of backdrop and poster
@@ -167,18 +218,25 @@ class DetailViewController: UIViewController {
         let releaseFrame = CGRect(x: posterFrame.maxX + offset, y: titleFrame.maxY + offset,
                                   width: originalReleaseWidth, height: originalReleaseHeight)
         
+        let scWidth = segmentedControl.frame.width
+        let scHeight = segmentedControl.frame.height
+        let scX = (view.frame.width - scWidth) / 2
+        let scY = posterImageView.frame.maxY + offset
+        let scFrame = CGRect(x: scX, y: scY, width: scWidth, height: scHeight)
+        
         let tabBarY = self.tabBarController!.tabBar.frame.origin.y
-        let overviewY = posterImageView.frame.maxY + offset
-        let overviewX = posterImageView.frame.origin.x
-        let overviewHeight = tabBarY - 10 - overviewY
-        let overviewWidth = overviewLabel.frame.width
+        let overviewY = scFrame.maxY + offset
+        let overviewX = segmentedControl.frame.origin.x
+        let overviewHeight = tabBarY - offset - overviewY
+        let overviewWidth = overviewTextView.frame.width
         let overviewFrame = CGRect(x: overviewX, y: overviewY,
                                    width: overviewWidth, height: overviewHeight)
         
         titleLabel.frame = titleFrame
         releaseDateLabel.frame = releaseFrame
-        overviewLabel.frame = overviewFrame
-        overviewLabel.sizeToFit()
+        segmentedControl.frame = scFrame
+        overviewTextView.frame = overviewFrame
+        collectionView.frame = overviewFrame
     }
     
     func getYoutubeKey(urlString: String, completion: @escaping (String) -> Void) {
@@ -227,6 +285,49 @@ class DetailViewController: UIViewController {
         }
         
     }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return similarContents.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PosterCell", for: indexPath)
+        let posterCell = cell as! PosterCell
+        
+        let content = similarContents[indexPath.row]
+        if let path = content["poster_path"] as? String {
+            posterCell.setPosterImage(path: path)
+        }
+        
+        return posterCell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let content = similarContents[indexPath.row]
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
+        if contentType == 0 {
+            vc.movie = content
+        }
+        else if contentType == 1 {
+            vc.tvShow = content
+        }
+        vc.contentType = contentType
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    
+    @IBAction func toggledSegmentedControl(_ sender: UISegmentedControl) {
+        if sender.selectedSegmentIndex == OVERVIEW {
+            self.hideViewWithAnimation(view: collectionView, duration: 0.2, hidden: true)
+            self.hideViewWithAnimation(view: overviewTextView, duration: 0.2, hidden: false)
+        }
+        else {
+            self.hideViewWithAnimation(view: collectionView, duration: 0.2, hidden: false)
+            self.hideViewWithAnimation(view: overviewTextView, duration: 0.2, hidden: true)
+        }
+    }
+    
     
     func setImageView(imageView: UIImageView, path: String, completion: (() -> Void)? = nil) {
         let urlS = imageTmdb + path
