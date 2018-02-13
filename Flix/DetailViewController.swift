@@ -34,7 +34,6 @@ class DetailViewController: UIViewController {
         
         posterImageView.isUserInteractionEnabled = true
         
-        view.backgroundColor = .black
         posterImageView.layer.borderWidth = 2.0
         posterImageView.layer.borderColor = UIColor.white.cgColor
         
@@ -44,14 +43,21 @@ class DetailViewController: UIViewController {
     
     func displayData() {
         if let movie = movie {
-            if let title = movie["title"] as? String,
-                let overview = movie["overview"] as? String,
-                let releaseDate = movie["release_date"] as? String {
+            if let title = movie["title"] as? String {
                 titleLabel.text = title
+            }
+            
+            if let overview = movie["overview"] as? String {
                 overviewLabel.text = overview
-                
-                // Resize the label to text length
                 overviewLabel.sizeToFit()
+            }
+            
+            if var releaseDate = movie["release_date"] as? String {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd"
+                let date = formatter.date(from: releaseDate)
+                formatter.dateFormat = "MMM d, yyyy"
+                releaseDate = formatter.string(from: date!)
                 releaseDateLabel.text = releaseDate
             }
             
@@ -76,15 +82,21 @@ class DetailViewController: UIViewController {
         }
         
         else if let show = tvShow {
-            if let name = show["name"] as? String,
-                let overview = show["overview"] as? String,
-                let firstAirDate = show["first_air_date"] as? String {
-                
+            if let name = show["name"] as? String {
                 titleLabel.text = name
+            }
+            
+            if let overview = show["overview"] as? String {
                 overviewLabel.text = overview
-                
-                // Resize the label to text length
                 overviewLabel.sizeToFit()
+            }
+            
+            if var firstAirDate = show["first_air_date"] as? String {
+                let formatter = DateFormatter()
+                formatter.dateFormat = "yyyy-MM-dd"
+                let date = formatter.date(from: firstAirDate)
+                formatter.dateFormat = "MMM d, yyyy"
+                firstAirDate = formatter.string(from: date!)
                 releaseDateLabel.text = firstAirDate
             }
             

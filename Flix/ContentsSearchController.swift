@@ -73,7 +73,7 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
     func fetchContents(completion: (() -> Void)? = nil) {
         var url: URL!
         if contentType == MOVIES {
-            url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(api_key)")!
+            url = URL(string: "https://api.themoviedb.org/3/movie/popular?api_key=\(api_key)")!
         }
         else if contentType == TV_SHOWS {
             url = URL(string: "https://api.themoviedb.org/3/tv/popular?api_key=\(api_key)&language=en-US&page=1")!
