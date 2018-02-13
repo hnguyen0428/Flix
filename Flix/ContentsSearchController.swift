@@ -16,24 +16,46 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var nowPlayingMovies: [[String:Any]] = []
-    var displayedMovies: [[String:Any]] = []
+    var storedContents: [[String:Any]] = []
+    var displayedContents: [[String:Any]] = []
     
     var query: String = ""
     var timer: Timer? = nil
     
     var includeAdult: String = "false"
     
+    var showOptions: Bool = false
+    var optionsView: OptionsView!
+    var optionsViewClosedY: CGFloat = 0.0
+    var contentType: Int = 0
+    let MOVIES = 0
+    let TV_SHOWS = 1
+    let ACTORS = 2
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         loadSettings()
+        setupOptionsView()
         
         collectionView.delegate = self
         collectionView.dataSource = self
         searchBar.delegate = self
         
         calculateCellSize()
-        fetchNowPlayingMovies()
+        fetchContents()
+    }
+    
+    func setupOptionsView() {
+        let width = view.frame.width
+        let height = searchBar.frame.height
+        let frame = CGRect(x: 0, y: 0 - height, width: width, height: height)
+        optionsView = OptionsView(frame: frame)
+        view.addSubview(optionsView)
+        
+        optionsViewClosedY = 0 - height
+        
+        optionsView.segmentedControl.addTarget(self, action: #selector(changeContentType), for: .valueChanged)
+        optionsView.segmentedControl.selectedSegmentIndex = contentType
     }
     
     func loadSettings() {
@@ -41,10 +63,25 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         if let str = includeAdult {
             self.includeAdult = str
         }
+        
+        let contentType = UserDefaults.standard.object(forKey: "search_content_type") as? Int
+        if let i = contentType {
+            self.contentType = i
+        }
     }
     
-    func fetchNowPlayingMovies(completion: (() -> Void)? = nil) {
-        let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed")!
+    func fetchContents(completion: (() -> Void)? = nil) {
+        var url: URL!
+        if contentType == MOVIES {
+            url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(api_key)")!
+        }
+        else if contentType == TV_SHOWS {
+            url = URL(string: "https://api.themoviedb.org/3/tv/popular?api_key=\(api_key)&language=en-US&page=1")!
+        }
+        else if contentType == ACTORS {
+            url = URL(string: "https://api.themoviedb.org/3/person/popular?api_key=\(api_key)&language=en-US&page=1")
+        }
+        
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         
@@ -57,8 +94,8 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
                 completion?()
             } else if let data = data {
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                self.nowPlayingMovies = dataDictionary["results"] as! [[String:Any]]
-                self.displayedMovies = self.nowPlayingMovies
+                self.storedContents = dataDictionary["results"] as! [[String:Any]]
+                self.displayedContents = self.storedContents
                 self.shadeView(shaded: false)
                 self.activityIndicator.stopAnimating()
                 completion?()
@@ -66,7 +103,9 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
             }
         }
         task.resume()
+
     }
+    
     
     func calculateCellSize() {
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
@@ -90,9 +129,29 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         }
     }
     
+    @objc func changeContentType(_ sc: UISegmentedControl) {
+        contentType = sc.selectedSegmentIndex
+        fetchContents()
+        
+        UserDefaults.standard.set(contentType, forKey: "search_content_type")
+        UserDefaults.standard.synchronize()
+    }
+    
     
     func searchContents(query: String, completion: @escaping ([[String:Any]]) -> Void) {
-        let url = URL(string: "https://api.themoviedb.org/3/search/movie?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed&language=en-US&query=\(query)&page=1&include_adult=\(self.includeAdult)")!
+        var url: URL!
+        
+        if contentType == MOVIES {
+            url = URL(string: "https://api.themoviedb.org/3/search/movie?api_key=\(api_key)&language=en-US&query=\(query)&page=1&include_adult=\(self.includeAdult)")!
+        }
+        else if contentType == TV_SHOWS {
+            url = URL(string: "https://api.themoviedb.org/3/search/tv?api_key=\(api_key)&language=en-US&query=\(query)&page=1")
+        }
+        else if contentType == ACTORS {
+            url = URL(string: "https://api.themoviedb.org/3/search/person?api_key=\(api_key)&language=en-US&query=\(query)&page=1&include_adult=\(includeAdult)")
+        }
+        
+        
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
         
@@ -106,11 +165,12 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
                 self.activityIndicator.stopAnimating()
             } else if let data = data {
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                let movies = dataDictionary["results"] as! [[String:Any]]
+                let results = dataDictionary["results"] as! [[String:Any]]
                 self.shadeView(shaded: false)
                 self.activityIndicator.stopAnimating()
-                completion(movies)
+                completion(results)
             }
+            self.searchBar.resignFirstResponder()
         }
         task.resume()
     }
@@ -118,13 +178,19 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
     
     @objc func updateContents(_ timer: Timer) {
         if self.query.isEmpty {
-            self.displayedMovies = self.nowPlayingMovies
+            self.displayedContents = self.storedContents
             self.collectionView.reloadData()
             return
         }
         
-        searchContents(query: self.query) { movies in
-            self.displayedMovies = movies
+        searchContents(query: self.query) { results in
+            self.displayedContents = results.filter { (content:[String:Any]) -> Bool in
+                let key = self.contentType == self.ACTORS ? "profile_path" : "poster_path"
+                if let _ = content[key] {
+                    return true
+                }
+                return false
+            }
             self.collectionView.reloadData()
         }
     }
@@ -137,25 +203,72 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         }
         
         let trimmed = searchText.replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
-        query = trimmed
+        
+        query = trimmed.replacingOccurrences(of: " ", with: "+")
         timer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(updateContents), userInfo: nil, repeats: false)
     }
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return displayedMovies.count
+        return displayedContents.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PosterCell", for: indexPath)
         let posterCell = cell as! PosterCell
         
-        let movie = displayedMovies[indexPath.row]
-        if let path = movie["poster_path"] as? String {
+        let movie = displayedContents[indexPath.row]
+        let key = contentType == ACTORS ? "profile_path" : "poster_path"
+        
+        if let path = movie[key] as? String {
             posterCell.setPosterImage(path: path)
         }
         
         return posterCell
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if contentType != ACTORS {
+            let content = displayedContents[indexPath.row]
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
+            if contentType == MOVIES {
+                vc.movie = content
+            }
+            else if contentType == TV_SHOWS {
+                vc.tvShow = content
+            }
+            vc.contentType = contentType
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    
+    @IBAction func tappedOptions(_ sender: Any) {
+        if showOptions {
+            // Close options view
+            UIView.animate(withDuration: 0.5, animations:
+                {
+                    self.optionsView.frame.origin.y = self.optionsViewClosedY
+            })
+        }
+        else {
+            // Show options view
+            UIView.animate(withDuration: 0.5, animations:
+                {
+                    self.optionsView.frame.origin.y = self.searchBar.frame.origin.y
+            })
+        }
+        showOptions = !showOptions
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        let includeAdult = UserDefaults.standard.object(forKey: "include_adult") as? String
+        if let str = includeAdult {
+            self.includeAdult = str
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -164,3 +277,36 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
     }
     
 }
+
+class OptionsView: UIView {
+    
+    var segmentedControl: UISegmentedControl!
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        self.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        self.layer.cornerRadius = 15.0
+        self.layer.isOpaque = false
+        let width = 0.90 * self.frame.width
+        let height = 0.65 * self.frame.height
+        let x = (self.frame.width - width) / 2
+        let y = (self.frame.height - height) / 2
+        let frame = CGRect(x: x, y: y, width: width, height: height)
+        
+        let items = ["Movies", "TV Shows", "Actors/Actresses"]
+        segmentedControl = UISegmentedControl(items: items)
+        segmentedControl.tintColor = .white
+        segmentedControl.frame = frame
+        
+        segmentedControl.selectedSegmentIndex = 0
+        self.addSubview(segmentedControl)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+    }
+    
+}
+
+

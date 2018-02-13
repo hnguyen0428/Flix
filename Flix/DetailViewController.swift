@@ -23,6 +23,8 @@ class DetailViewController: UIViewController {
     @IBOutlet var tapGesture: UITapGestureRecognizer!
     
     var movie: [String:Any]?
+    var tvShow: [String:Any]?
+    var contentType: Int = 0
     
     var posterImage: UIImage?
     var backdropImage: UIImage?
@@ -35,6 +37,8 @@ class DetailViewController: UIViewController {
         view.backgroundColor = .black
         posterImageView.layer.borderWidth = 2.0
         posterImageView.layer.borderColor = UIColor.white.cgColor
+        
+        
         displayData()
     }
     
@@ -66,6 +70,38 @@ class DetailViewController: UIViewController {
                 // Resize the label to text length
                 overviewLabel.sizeToFit()
                 releaseDateLabel.text = releaseDate
+            }
+        }
+        
+        else if let show = tvShow {
+            if let name = show["name"] as? String,
+                let overview = show["overview"] as? String,
+                let firstAirDate = show["first_air_date"] as? String {
+                
+                titleLabel.text = name
+                overviewLabel.text = overview
+                
+                // Resize the label to text length
+                overviewLabel.sizeToFit()
+                releaseDateLabel.text = firstAirDate
+            }
+            
+            if let posterPath = show["poster_path"] as? String,
+                let backdropPath = show["backdrop_path"] as? String {
+                let group = DispatchGroup()
+                group.enter()
+                setImageView(imageView: backdropImageView, path: backdropPath) {
+                    self.backdropImage = self.backdropImageView.image
+                    group.leave()
+                }
+                group.enter()
+                setImageView(imageView: posterImageView, path: posterPath) {
+                    self.posterImage = self.posterImageView.image
+                    group.leave()
+                }
+                group.notify(queue: .main) {
+                    self.repositionComponents()
+                }
             }
         }
     }
@@ -149,7 +185,7 @@ class DetailViewController: UIViewController {
     @IBAction func tappedPoster(_ sender: Any) {
         if let movie = movie {
             if let id = movie["id"] as? Int {
-                let urlString = "https://api.themoviedb.org/3/movie/\(id)/videos?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed"
+                let urlString = "https://api.themoviedb.org/3/movie/\(id)/videos?api_key=\(api_key)"
                 self.getYoutubeKey(urlString: urlString) { key in
                     let videoURL = "https://www.youtube.com/watch?v=\(key)"
                     let trailerVC = TrailerViewController()
