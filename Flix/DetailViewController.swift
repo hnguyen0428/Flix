@@ -65,12 +65,15 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
             }
             
             if var releaseDate = movie["release_date"] as? String {
+                print(releaseDate)
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd"
                 let date = formatter.date(from: releaseDate)
-                formatter.dateFormat = "MMM d, yyyy"
-                releaseDate = formatter.string(from: date!)
-                releaseDateLabel.text = releaseDate
+                if let date = date {
+                    formatter.dateFormat = "MMM d, yyyy"
+                    releaseDate = formatter.string(from: date)
+                    releaseDateLabel.text = releaseDate
+                }
             }
             
             let group = DispatchGroup()
