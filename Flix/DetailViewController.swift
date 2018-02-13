@@ -142,7 +142,7 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
         }
         else if let tvShow = tvShow {
             let id = tvShow["id"] as! Int
-            url = URL(string: "https://api.themoviedb.org/3/tv/\(id)?api_key=\(api_key)&language=en-US")!
+            url = URL(string: "https://api.themoviedb.org/3/tv/\(id)/similar?api_key=\(api_key)&language=en-US")!
         }
         
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
@@ -154,8 +154,10 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
                 print(error.localizedDescription)
             } else if let data = data {
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                self.similarContents = dataDictionary["results"] as! [[String:Any]]
-                self.collectionView.reloadData()
+                if let contents = dataDictionary["results"] as? [[String:Any]] {
+                    self.similarContents = contents
+                    self.collectionView.reloadData()
+                }
             }
         }
         task.resume()

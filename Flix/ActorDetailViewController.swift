@@ -36,6 +36,9 @@ class ActorDetailViewController: UIViewController, UICollectionViewDataSource,
         collectionView.isHidden = true
         collectionView.backgroundColor = .clear
         
+        profileImageView.layer.borderWidth = 1.0
+        profileImageView.layer.borderColor = UIColor.white.cgColor
+        
         calculateCellSize()
         
         fetchActorInfo { info in

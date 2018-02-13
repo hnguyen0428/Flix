@@ -204,7 +204,7 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         let trimmed = searchText.replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
         
         query = trimmed.replacingOccurrences(of: " ", with: "+")
-        timer = Timer.scheduledTimer(timeInterval: 0.8, target: self, selector: #selector(updateContents), userInfo: nil, repeats: false)
+        timer = Timer.scheduledTimer(timeInterval: 0.6, target: self, selector: #selector(updateContents), userInfo: nil, repeats: false)
     }
     
     
