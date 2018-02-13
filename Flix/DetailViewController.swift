@@ -46,30 +46,32 @@ class DetailViewController: UIViewController {
         if let movie = movie {
             if let title = movie["title"] as? String,
                 let overview = movie["overview"] as? String,
-                let posterPath = movie["poster_path"] as? String,
-                let backdropPath = movie["backdrop_path"] as? String,
                 let releaseDate = movie["release_date"] as? String {
-                
-                let group = DispatchGroup()
-                group.enter()
-                setImageView(imageView: backdropImageView, path: backdropPath) {
-                    self.backdropImage = self.backdropImageView.image
-                    group.leave()
-                }
-                group.enter()
-                setImageView(imageView: posterImageView, path: posterPath) {
-                    self.posterImage = self.posterImageView.image
-                    group.leave()
-                }
-                group.notify(queue: .main) {
-                    self.repositionComponents()
-                }
                 titleLabel.text = title
                 overviewLabel.text = overview
                 
                 // Resize the label to text length
                 overviewLabel.sizeToFit()
                 releaseDateLabel.text = releaseDate
+            }
+            
+            let group = DispatchGroup()
+            if let posterPath = movie["poster_path"] as? String {
+                group.enter()
+                setImageView(imageView: posterImageView, path: posterPath) {
+                    self.posterImage = self.posterImageView.image
+                    group.leave()
+                }
+            }
+            if let backdropPath = movie["backdrop_path"] as? String {
+                group.enter()
+                setImageView(imageView: backdropImageView, path: backdropPath) {
+                    self.backdropImage = self.backdropImageView.image
+                    group.leave()
+                }
+            }
+            group.notify(queue: .main) {
+                self.repositionComponents()
             }
         }
         
@@ -86,35 +88,44 @@ class DetailViewController: UIViewController {
                 releaseDateLabel.text = firstAirDate
             }
             
-            if let posterPath = show["poster_path"] as? String,
-                let backdropPath = show["backdrop_path"] as? String {
-                let group = DispatchGroup()
-                group.enter()
-                setImageView(imageView: backdropImageView, path: backdropPath) {
-                    self.backdropImage = self.backdropImageView.image
-                    group.leave()
-                }
+            let group = DispatchGroup()
+            if let posterPath = show["poster_path"] as? String {
                 group.enter()
                 setImageView(imageView: posterImageView, path: posterPath) {
                     self.posterImage = self.posterImageView.image
                     group.leave()
                 }
-                group.notify(queue: .main) {
-                    self.repositionComponents()
+            }
+            
+            if let backdropPath = show["backdrop_path"] as? String {
+                group.enter()
+                setImageView(imageView: backdropImageView, path: backdropPath) {
+                    self.backdropImage = self.backdropImageView.image
+                    group.leave()
                 }
+            }
+            group.notify(queue: .main) {
+                self.repositionComponents()
             }
         }
     }
     
     // Return height of backdrop and poster
     func resizeImageViews() -> (CGFloat, CGFloat) {
-        let widthBackdrop = view.frame.width
-        let heightToWidthBackdrop = backdropImage!.size.height / backdropImage!.size.width
-        let heightBackdrop = widthBackdrop * heightToWidthBackdrop
+        var heightBackdrop = backdropImageView.frame.height
+        var heightPoster = posterImageView.frame.height
+
+        if let img = backdropImage {
+            let widthBackdrop = view.frame.width
+            let heightToWidthBackdrop = img.size.height / img.size.width
+            heightBackdrop = widthBackdrop * heightToWidthBackdrop
+        }
         
-        let widthPoster = view.frame.width * DetailViewController.WIDTH_POSTER_RATIO
-        let heightToWidthPoster = posterImage!.size.height / posterImage!.size.width
-        let heightPoster = widthPoster * heightToWidthPoster
+        if let img = posterImage {
+            let widthPoster = view.frame.width * DetailViewController.WIDTH_POSTER_RATIO
+            let heightToWidthPoster = img.size.height / img.size.width
+            heightPoster = widthPoster * heightToWidthPoster
+        }
         
         return (heightBackdrop, heightPoster)
     }

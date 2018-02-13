@@ -170,7 +170,6 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
                 self.activityIndicator.stopAnimating()
                 completion(results)
             }
-            self.searchBar.resignFirstResponder()
         }
         task.resume()
     }
@@ -243,6 +242,25 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
                 vc.tvShow = content
             }
             vc.contentType = contentType
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+        else {
+            let content = displayedContents[indexPath.row]
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "ActorDetailViewController") as! ActorDetailViewController
+            
+            if let knownFor = content["known_for"] as? [[String:Any]] {
+                let kf = knownFor.filter { (content: [String:Any]) in
+                    if let _ = content["poster_path"] as? String {
+                        return true
+                    }
+                    return false
+                }
+                vc.knownFor = kf
+            }
+            if let id = content["id"] as? Int {
+                vc.id = id
+            }
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

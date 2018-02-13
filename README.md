@@ -86,6 +86,7 @@ The following **additional** features are implemented:
 
 - [x] Implemented dynamic image view resizing based on the aspect ratio of images loaded
 - [x] Added searching functionality for TV Shows, Movies, and Actors/Actresses
+- [x] Added actor/actress detail view controller
 
 Please list two areas of the assignment you'd like to **discuss further with your peers** during the next class (examples include better ways to implement something, how to extend your app in certain ways, etc):
 
