@@ -210,11 +210,17 @@ class DetailViewController: UIViewController {
             if let id = movie["id"] as? Int {
                 let urlString = "https://api.themoviedb.org/3/movie/\(id)/videos?api_key=\(api_key)"
                 self.getYoutubeKey(urlString: urlString) { key in
-                    let videoURL = "https://www.youtube.com/watch?v=\(key)"
-                    let trailerVC = TrailerViewController()
-                    trailerVC.videoURL = videoURL
-                    
-                    self.present(trailerVC, animated: true, completion: nil)
+                    let url = URL(string:"youtube://\(key)")!
+                    if !UIApplication.shared.canOpenURL(url) {
+                        let videoURL = "https://www.youtube.com/watch?v=\(key)"
+                        let trailerVC = TrailerViewController()
+                        trailerVC.videoURL = videoURL
+                        
+                        self.present(trailerVC, animated: true, completion: nil)
+                    }
+                    else {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
                 }
                 
             }
