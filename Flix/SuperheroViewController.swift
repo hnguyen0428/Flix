@@ -80,23 +80,3 @@ class SuperheroViewController: UIViewController, UICollectionViewDelegate,
     }
     
 }
-
-
-class PosterCell: UICollectionViewCell {
-    
-    @IBOutlet weak var posterImageView: UIImageView!
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
-    func setPosterImage(path: String) {
-        let urlS = imageTmdb + path
-        let url = URL(string: urlS)
-        posterImageView.af_setImage(withURL: url!)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-}
