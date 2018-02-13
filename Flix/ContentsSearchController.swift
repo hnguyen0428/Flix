@@ -111,7 +111,7 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
         let cellsPerLine: CGFloat = 2
         let interItemSpacingTotal = layout.minimumInteritemSpacing * (cellsPerLine - 1)
-        let width = collectionView.frame.size.width / cellsPerLine -
+        let width = view.frame.width / cellsPerLine -
             interItemSpacingTotal / cellsPerLine
         layout.itemSize = CGSize(width: width, height: width * 3 / 2)
     }
@@ -186,7 +186,7 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         searchContents(query: self.query) { results in
             self.displayedContents = results.filter { (content:[String:Any]) -> Bool in
                 let key = self.contentType == self.ACTORS ? "profile_path" : "poster_path"
-                if let _ = content[key] {
+                if let _ = content[key] as? String {
                     return true
                 }
                 return false
@@ -222,6 +222,9 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         
         if let path = movie[key] as? String {
             posterCell.setPosterImage(path: path)
+        }
+        else {
+            print("Doesn't have image")
         }
         
         return posterCell
