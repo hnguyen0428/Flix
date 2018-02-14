@@ -18,11 +18,11 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
     
     @IBOutlet weak var backdropImageView: UIImageView!
     @IBOutlet weak var posterImageView: UIImageView!
-    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var releaseDateLabel: UILabel!
     @IBOutlet weak var overviewTextView: UITextView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var segmentedControl: UISegmentedControl!
+    @IBOutlet weak var scrollingLabel: ScrollingLabel!
     
     @IBOutlet var tapGesture: UITapGestureRecognizer!
     
@@ -36,6 +36,7 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
     
     let OVERVIEW = 0
     let SIMILAR = 1
+    let OFFSET: CGFloat = 10.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,10 +55,11 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
         displayData()
     }
     
+    
     func displayData() {
         if let movie = movie {
             if let title = movie["title"] as? String {
-                titleLabel.text = title
+                scrollingLabel.text = title
             }
             
             if let overview = movie["overview"] as? String {
@@ -65,7 +67,6 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
             }
             
             if var releaseDate = movie["release_date"] as? String {
-                print(releaseDate)
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd"
                 let date = formatter.date(from: releaseDate)
@@ -98,7 +99,7 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
         
         else if let show = tvShow {
             if let name = show["name"] as? String {
-                titleLabel.text = name
+                scrollingLabel.text = name
             }
             
             if let overview = show["overview"] as? String {
@@ -214,8 +215,8 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
         
         let offset = DetailViewController.OFFSET
         
-        let originalTitleWidth = titleLabel.frame.width
-        let originalTitleHeight = titleLabel.frame.height
+        let originalTitleWidth = scrollingLabel.frame.width
+        let originalTitleHeight = scrollingLabel.frame.height
         let titleFrame = CGRect(x: posterFrame.maxX + offset, y: backdropFrame.maxY + offset,
                                 width: originalTitleWidth, height: originalTitleHeight)
         let originalReleaseWidth = releaseDateLabel.frame.width
@@ -237,7 +238,7 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
         let overviewFrame = CGRect(x: overviewX, y: overviewY,
                                    width: overviewWidth, height: overviewHeight)
         
-        titleLabel.frame = titleFrame
+        scrollingLabel.frame = titleFrame
         releaseDateLabel.frame = releaseFrame
         segmentedControl.frame = scFrame
         overviewTextView.frame = overviewFrame

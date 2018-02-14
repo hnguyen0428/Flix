@@ -201,9 +201,12 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
             timer = nil
         }
         
-        let trimmed = searchText.replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
-        
+        var characterSet = CharacterSet.alphanumerics.inverted
+        characterSet.remove(charactersIn: " ")
+        let str = searchText.components(separatedBy: characterSet).joined(separator: "")
+        let trimmed = str.replacingOccurrences(of: "\\s+$", with: "", options: .regularExpression)
         query = trimmed.replacingOccurrences(of: " ", with: "+")
+        
         timer = Timer.scheduledTimer(timeInterval: 0.6, target: self, selector: #selector(updateContents), userInfo: nil, repeats: false)
     }
     

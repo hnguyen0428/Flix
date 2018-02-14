@@ -463,15 +463,8 @@
                                     <outletCollection property="gestureRecognizers" destination="MFa-E1-yo4" appends="YES" id="V0i-pL-73I"/>
                                 </connections>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="N/A" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yN6-Dl-6CC">
-                                <rect key="frame" x="164" y="319" width="218" height="23"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
-                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="N/A" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UXh-AZ-rvO">
-                                <rect key="frame" x="164" y="351" width="218" height="23"/>
+                                <rect key="frame" x="164" y="351" width="230" height="23"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -526,6 +519,22 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="On5-gv-aLt" customClass="ScrollingLabel" customModule="Flix" customModuleProvider="target">
+                                <rect key="frame" x="165" y="311" width="229" height="32"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="N/A" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KNA-Jr-M3Q">
+                                        <rect key="frame" x="0.0" y="0.0" width="229" height="32"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="22"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <connections>
+                                    <outlet property="label" destination="KNA-Jr-M3Q" id="9aJ-Gp-a0g"/>
+                                </connections>
+                            </scrollView>
                         </subviews>
                         <color key="backgroundColor" red="0.17254901960784313" green="0.043137254901960784" blue="0.12941176470588234" alpha="1" colorSpace="calibratedRGB"/>
                         <viewLayoutGuide key="safeArea" id="3q1-ks-SWp"/>
@@ -536,9 +545,9 @@
                         <outlet property="overviewTextView" destination="Gcv-Ry-mg6" id="TEw-Sn-67p"/>
                         <outlet property="posterImageView" destination="B9X-5d-Qau" id="xYP-Fl-a7Y"/>
                         <outlet property="releaseDateLabel" destination="UXh-AZ-rvO" id="7so-A6-ifq"/>
+                        <outlet property="scrollingLabel" destination="On5-gv-aLt" id="443-8j-UNn"/>
                         <outlet property="segmentedControl" destination="6PP-2L-Wxm" id="4Wr-fO-tKh"/>
                         <outlet property="tapGesture" destination="MFa-E1-yo4" id="fRK-b9-6ps"/>
-                        <outlet property="titleLabel" destination="yN6-Dl-6CC" id="1z2-D0-FFf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NSb-bq-Es2" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -548,7 +557,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="895.6521739130435" y="132.06521739130434"/>
+            <point key="canvasLocation" x="895.6521739130435" y="131.25"/>
         </scene>
         <!--Search-->
         <scene sceneID="Xfh-G9-Liq">
