@@ -130,20 +130,14 @@
 		47B995AE2021520800931EED /* Flix */ = {
 			isa = PBXGroup;
 			children = (
+				47F3FA9F2033BD0000857207 /* ViewControllers */,
 				47B995AF2021520800931EED /* AppDelegate.swift */,
-				47B995B12021520800931EED /* MoviesViewController.swift */,
 				47B995B32021520800931EED /* Main.storyboard */,
 				47B995B62021520800931EED /* Assets.xcassets */,
 				47B995B82021520800931EED /* LaunchScreen.storyboard */,
 				47B995BB2021520800931EED /* Info.plist */,
-				47EC6ACD202A84FF0075426F /* SuperheroViewController.swift */,
-				47EC6ACB202A7F1B0075426F /* DetailViewController.swift */,
-				47C5DD932031920500B5F5F6 /* TrailerViewController.swift */,
-				47C5DD95203264F000B5F5F6 /* ContentsSearchController.swift */,
 				47C5DD972032666C00B5F5F6 /* PosterCell.swift */,
-				47C5DD992032713300B5F5F6 /* SettingsViewController.swift */,
 				47F201552032CC6700F756B2 /* Extensions.swift */,
-				47F201572032CCA700F756B2 /* ActorDetailViewController.swift */,
 			);
 			path = Flix;
 			sourceTree = "<group>";
@@ -164,6 +158,20 @@
 				47B995D12021520900931EED /* Info.plist */,
 			);
 			path = FlixUITests;
+			sourceTree = "<group>";
+		};
+		47F3FA9F2033BD0000857207 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				47EC6ACB202A7F1B0075426F /* DetailViewController.swift */,
+				47C5DD932031920500B5F5F6 /* TrailerViewController.swift */,
+				47C5DD95203264F000B5F5F6 /* ContentsSearchController.swift */,
+				47C5DD992032713300B5F5F6 /* SettingsViewController.swift */,
+				47F201572032CCA700F756B2 /* ActorDetailViewController.swift */,
+				47EC6ACD202A84FF0075426F /* SuperheroViewController.swift */,
+				47B995B12021520800931EED /* MoviesViewController.swift */,
+			);
+			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 		5D60765FAE30A2C9E4B353AA /* Pods */ = {
