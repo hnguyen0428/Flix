@@ -12,10 +12,15 @@ import UIKit
 class DetailViewController: UIViewController, UICollectionViewDelegate,
                             UICollectionViewDataSource {
     
+    override var shouldAutorotate: Bool {
+        return false
+    }
+    
     static let WIDTH_POSTER_RATIO: CGFloat = 0.30
     static let LEFT_INSET: CGFloat = 0.04
     static let OFFSET: CGFloat = 10.0
     
+    @IBOutlet weak var backdropHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var backdropImageView: UIImageView!
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var releaseDateLabel: UILabel!
@@ -40,6 +45,7 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        AppUtility.lockOrientation(.portrait)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.isHidden = true
@@ -111,8 +117,11 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
                 formatter.dateFormat = "yyyy-MM-dd"
                 let date = formatter.date(from: firstAirDate)
                 formatter.dateFormat = "MMM d, yyyy"
-                firstAirDate = formatter.string(from: date!)
-                releaseDateLabel.text = firstAirDate
+                if let date = date {
+                    formatter.dateFormat = "MMM d, yyyy"
+                    firstAirDate = formatter.string(from: date)
+                    releaseDateLabel.text = firstAirDate
+                }
             }
             
             let group = DispatchGroup()
@@ -180,9 +189,8 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
     }
     
     // Return height of backdrop and poster
-    func resizeImageViews() -> (CGFloat, CGFloat) {
+    func resizeImageViews() -> CGFloat {
         var heightBackdrop = backdropImageView.frame.height
-        var heightPoster = posterImageView.frame.height
 
         if let img = backdropImage {
             let widthBackdrop = view.frame.width
@@ -190,59 +198,12 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
             heightBackdrop = widthBackdrop * heightToWidthBackdrop
         }
         
-        if let img = posterImage {
-            let widthPoster = view.frame.width * DetailViewController.WIDTH_POSTER_RATIO
-            let heightToWidthPoster = img.size.height / img.size.width
-            heightPoster = widthPoster * heightToWidthPoster
-        }
-        
-        return (heightBackdrop, heightPoster)
+        return heightBackdrop
     }
     
     func repositionComponents() {
-        let heights = resizeImageViews()
-        let heightBackdrop = heights.0
-        let backdropInset = self.navigationController!.navigationBar.frame.maxY
-        let backdropFrame = CGRect(x: 0, y: backdropInset, width: view.frame.width, height: heightBackdrop)
-        self.backdropImageView.frame = backdropFrame
-        
-        let heightPoster = heights.1
-        let widthPoster = view.frame.width * DetailViewController.WIDTH_POSTER_RATIO
-        let leftInset = view.frame.width * DetailViewController.LEFT_INSET
-        let posterFrame = CGRect(x: leftInset, y: 0, width: widthPoster, height: heightPoster)
-        self.posterImageView.frame = posterFrame
-        self.posterImageView.center.y = backdropImageView.frame.maxY
-        
-        let offset = DetailViewController.OFFSET
-        
-        let originalTitleWidth = scrollingLabel.frame.width
-        let originalTitleHeight = scrollingLabel.frame.height
-        let titleFrame = CGRect(x: posterFrame.maxX + offset, y: backdropFrame.maxY + offset,
-                                width: originalTitleWidth, height: originalTitleHeight)
-        let originalReleaseWidth = releaseDateLabel.frame.width
-        let originalReleaseHeight = releaseDateLabel.frame.height
-        let releaseFrame = CGRect(x: posterFrame.maxX + offset, y: titleFrame.maxY + offset,
-                                  width: originalReleaseWidth, height: originalReleaseHeight)
-        
-        let scWidth = segmentedControl.frame.width
-        let scHeight = segmentedControl.frame.height
-        let scX = (view.frame.width - scWidth) / 2
-        let scY = posterImageView.frame.maxY + offset
-        let scFrame = CGRect(x: scX, y: scY, width: scWidth, height: scHeight)
-        
-        let tabBarY = self.tabBarController!.tabBar.frame.origin.y
-        let overviewY = scFrame.maxY + offset
-        let overviewX = segmentedControl.frame.origin.x
-        let overviewHeight = tabBarY - offset - overviewY
-        let overviewWidth = overviewTextView.frame.width
-        let overviewFrame = CGRect(x: overviewX, y: overviewY,
-                                   width: overviewWidth, height: overviewHeight)
-        
-        scrollingLabel.frame = titleFrame
-        releaseDateLabel.frame = releaseFrame
-        segmentedControl.frame = scFrame
-        overviewTextView.frame = overviewFrame
-        collectionView.frame = overviewFrame
+        let heightBackdrop = resizeImageViews()
+        backdropHeightConstraint.constant = heightBackdrop
     }
     
     func getYoutubeKey(urlString: String, completion: @escaping (String) -> Void) {
@@ -344,6 +305,11 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
                 imageView.clipsToBounds = true
                 completion?()
         })
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        AppUtility.lockOrientation(.all)
     }
     
 }
