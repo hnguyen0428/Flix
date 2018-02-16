@@ -183,8 +183,8 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
         layout.minimumInteritemSpacing = 10.0
         layout.minimumLineSpacing = 10.0
         let interItemSpacingTotal = layout.minimumInteritemSpacing * (cellsPerLine - 1)
-        let width = collectionView.frame.size.width / cellsPerLine -
-            interItemSpacingTotal / cellsPerLine
+        
+        let width = (collectionView.frame.size.width - interItemSpacingTotal) / 2
         layout.itemSize = CGSize(width: width, height: width * 3 / 2)
     }
     
@@ -204,6 +204,7 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
     func repositionComponents() {
         let heightBackdrop = resizeImageViews()
         backdropHeightConstraint.constant = heightBackdrop
+        calculateCellSize()
     }
     
     func getYoutubeKey(urlString: String, completion: @escaping (String) -> Void) {

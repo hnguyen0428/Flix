@@ -518,25 +518,32 @@
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="N5B-62-SKS">
                                 <rect key="frame" x="18" y="350" width="376" height="327"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="og7-GW-iFq">
-                                    <size key="itemSize" width="135" height="133"/>
+                                    <size key="itemSize" width="183" height="274.5"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PosterCell" id="tK0-rZ-YaE" customClass="PosterCell" customModule="Flix" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="135" height="133"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="183" height="274.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                            <rect key="frame" x="0.0" y="0.0" width="135" height="133"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="183" height="274.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zB1-8s-kKf">
-                                                    <rect key="frame" x="0.0" y="0.0" width="135" height="133"/>
-                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="zB1-8s-kKf">
+                                                    <rect key="frame" x="0.0" y="0.0" width="183" height="274"/>
                                                 </imageView>
                                             </subviews>
                                         </view>
+                                        <constraints>
+                                            <constraint firstItem="zB1-8s-kKf" firstAttribute="width" secondItem="tK0-rZ-YaE" secondAttribute="width" id="FcM-08-4ut"/>
+                                            <constraint firstAttribute="bottom" secondItem="zB1-8s-kKf" secondAttribute="bottom" id="Nab-UE-DSh"/>
+                                            <constraint firstItem="zB1-8s-kKf" firstAttribute="height" secondItem="tK0-rZ-YaE" secondAttribute="height" id="PPt-39-hqr"/>
+                                            <constraint firstItem="zB1-8s-kKf" firstAttribute="top" secondItem="tK0-rZ-YaE" secondAttribute="top" id="k7p-Ld-1uY"/>
+                                            <constraint firstItem="zB1-8s-kKf" firstAttribute="leading" secondItem="tK0-rZ-YaE" secondAttribute="leading" id="lOf-xc-TU6"/>
+                                            <constraint firstAttribute="trailing" secondItem="zB1-8s-kKf" secondAttribute="trailing" id="qWB-7Y-7h1"/>
+                                        </constraints>
                                         <connections>
                                             <outlet property="posterImageView" destination="zB1-8s-kKf" id="7uY-51-6gQ"/>
                                         </connections>
@@ -578,11 +585,13 @@
                             <constraint firstItem="3q1-ks-SWp" firstAttribute="trailing" secondItem="UXh-AZ-rvO" secondAttribute="trailing" constant="20" id="VMk-hS-DX1"/>
                             <constraint firstItem="3q1-ks-SWp" firstAttribute="trailing" secondItem="On5-gv-aLt" secondAttribute="trailing" constant="20" id="ZkK-om-SRz"/>
                             <constraint firstItem="6PP-2L-Wxm" firstAttribute="leading" secondItem="3q1-ks-SWp" secondAttribute="leading" constant="18" id="fs2-xQ-eUZ"/>
+                            <constraint firstItem="N5B-62-SKS" firstAttribute="height" secondItem="Gcv-Ry-mg6" secondAttribute="height" id="gkb-5h-pjZ"/>
                             <constraint firstItem="RSy-Nd-oIq" firstAttribute="leading" secondItem="3q1-ks-SWp" secondAttribute="leading" id="h96-S9-AB6"/>
                             <constraint firstItem="B9X-5d-Qau" firstAttribute="leading" secondItem="3q1-ks-SWp" secondAttribute="leading" constant="18" id="ice-v4-r8F"/>
                             <constraint firstItem="UXh-AZ-rvO" firstAttribute="width" secondItem="On5-gv-aLt" secondAttribute="width" id="kAa-6s-wdw"/>
                             <constraint firstItem="3q1-ks-SWp" firstAttribute="trailing" secondItem="6PP-2L-Wxm" secondAttribute="trailing" constant="20" id="la2-zj-aFb"/>
                             <constraint firstItem="RSy-Nd-oIq" firstAttribute="top" secondItem="3q1-ks-SWp" secondAttribute="top" id="njB-q1-caD"/>
+                            <constraint firstItem="N5B-62-SKS" firstAttribute="width" secondItem="Gcv-Ry-mg6" secondAttribute="width" id="pZY-Av-xWr"/>
                             <constraint firstItem="Gcv-Ry-mg6" firstAttribute="leading" secondItem="6PP-2L-Wxm" secondAttribute="leading" id="s3f-mw-EjA"/>
                             <constraint firstItem="Gcv-Ry-mg6" firstAttribute="trailing" secondItem="6PP-2L-Wxm" secondAttribute="trailing" id="sGN-Wt-9G0"/>
                             <constraint firstItem="6PP-2L-Wxm" firstAttribute="top" secondItem="B9X-5d-Qau" secondAttribute="bottom" constant="10" id="xWz-GC-HzJ"/>
