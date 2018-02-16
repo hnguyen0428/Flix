@@ -45,6 +45,9 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+        
         AppUtility.lockOrientation(.portrait)
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -204,8 +207,8 @@ class DetailViewController: UIViewController, UICollectionViewDelegate,
     func repositionComponents() {
         let heightBackdrop = resizeImageViews()
         backdropHeightConstraint.constant = heightBackdrop
-        calculateCellSize()
     }
+    
     
     func getYoutubeKey(urlString: String, completion: @escaping (String) -> Void) {
         let url = URL(string: urlString)!
