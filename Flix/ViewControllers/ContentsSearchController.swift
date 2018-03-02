@@ -16,8 +16,8 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var storedContents: [[String:Any]] = []
-    var displayedContents: [[String:Any]] = []
+    var storedContents: [APIObject] = []
+    var displayedContents: [APIObject] = []
     
     var query: String = ""
     var timer: Timer? = nil
@@ -71,39 +71,44 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
     }
     
     func fetchContents(completion: (() -> Void)? = nil) {
-        var url: URL!
-        if contentType == MOVIES {
-            url = URL(string: "https://api.themoviedb.org/3/movie/popular?api_key=\(api_key)")!
-        }
-        else if contentType == TV_SHOWS {
-            url = URL(string: "https://api.themoviedb.org/3/tv/popular?api_key=\(api_key)&language=en-US&page=1")!
-        }
-        else if contentType == ACTORS {
-            url = URL(string: "https://api.themoviedb.org/3/person/popular?api_key=\(api_key)&language=en-US&page=1")
-        }
-        
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        
         self.shadeView(shaded: true)
         self.activityIndicator.startAnimating()
-        let task = session.dataTask(with: request) { (data, response, error) in
-            // This will run when the network request returns
-            if let error = error {
-                print(error.localizedDescription)
-                completion?()
-            } else if let data = data {
-                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                self.storedContents = dataDictionary["results"] as! [[String:Any]]
-                self.displayedContents = self.storedContents
+        if contentType == MOVIES {
+            APIManager().popularMovies(completion: { (movies, error) in
                 self.shadeView(shaded: false)
                 self.activityIndicator.stopAnimating()
+                if let movies = movies {
+                    self.storedContents = movies
+                    self.displayedContents = movies
+                    self.collectionView.reloadData()
+                }
                 completion?()
-                self.collectionView.reloadData()
-            }
+            })
         }
-        task.resume()
-
+        else if contentType == TV_SHOWS {
+            APIManager().popularTVShows(completion: { (tvShows, error) in
+                self.shadeView(shaded: false)
+                self.activityIndicator.stopAnimating()
+                if let tvShows = tvShows {
+                    self.storedContents = tvShows
+                    self.displayedContents = tvShows
+                    self.collectionView.reloadData()
+                }
+                completion?()
+            })
+        }
+        else if contentType == ACTORS {
+            APIManager().popularActors(completion: { (actors, error) in
+                self.shadeView(shaded: false)
+                self.activityIndicator.stopAnimating()
+                if let actors = actors {
+                    self.storedContents = actors
+                    self.displayedContents = actors
+                    self.collectionView.reloadData()
+                }
+                completion?()
+            })
+        }
     }
     
     
@@ -138,40 +143,36 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
     }
     
     
-    func searchContents(query: String, completion: @escaping ([[String:Any]]) -> Void) {
-        var url: URL!
-        
-        if contentType == MOVIES {
-            url = URL(string: "https://api.themoviedb.org/3/search/movie?api_key=\(api_key)&language=en-US&query=\(query)&page=1&include_adult=\(self.includeAdult)")!
-        }
-        else if contentType == TV_SHOWS {
-            url = URL(string: "https://api.themoviedb.org/3/search/tv?api_key=\(api_key)&language=en-US&query=\(query)&page=1")
-        }
-        else if contentType == ACTORS {
-            url = URL(string: "https://api.themoviedb.org/3/search/person?api_key=\(api_key)&language=en-US&query=\(query)&page=1&include_adult=\(includeAdult)")
-        }
-        
-        
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        
+    func searchContents(query: String, completion: @escaping ([APIObject]) -> Void) {
         self.shadeView(shaded: true)
         self.activityIndicator.startAnimating()
-        let task = session.dataTask(with: request) { (data, response, error) in
-            // This will run when the network request returns
-            if let error = error {
-                print(error.localizedDescription)
+        if contentType == MOVIES {
+            APIManager().searchMovies(query: query, includeAdult: includeAdult, completion: { (movies, error) in
                 self.shadeView(shaded: false)
                 self.activityIndicator.stopAnimating()
-            } else if let data = data {
-                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                let results = dataDictionary["results"] as! [[String:Any]]
-                self.shadeView(shaded: false)
-                self.activityIndicator.stopAnimating()
-                completion(results)
-            }
+                if let movies = movies {
+                    completion(movies)
+                }
+            })
         }
-        task.resume()
+        else if contentType == TV_SHOWS {
+            APIManager().searchTvShows(query: query, includeAdult: includeAdult, completion: { (tvShows, error) in
+                self.shadeView(shaded: false)
+                self.activityIndicator.stopAnimating()
+                if let tvShows = tvShows {
+                    completion(tvShows)
+                }
+            })
+        }
+        else if contentType == ACTORS {
+            APIManager().searchActors(query: query, includeAdult: includeAdult, completion: { (actors, error) in
+                self.shadeView(shaded: false)
+                self.activityIndicator.stopAnimating()
+                if let actors = actors {
+                    completion(actors)
+                }
+            })
+        }
     }
     
     
@@ -183,10 +184,21 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         }
         
         searchContents(query: self.query) { results in
-            self.displayedContents = results.filter { (content:[String:Any]) -> Bool in
-                let key = self.contentType == self.ACTORS ? "profile_path" : "poster_path"
-                if let _ = content[key] as? String {
-                    return true
+            self.displayedContents = results.filter { (content: APIObject) -> Bool in
+                if let movie = content as? Movie {
+                    if let _ = movie.posterUrl {
+                        return true
+                    }
+                }
+                else if let tvShow = content as? TVShow {
+                    if let _ = tvShow.posterUrl {
+                        return true
+                    }
+                }
+                else if let actor = content as? Actor {
+                    if let _ = actor.profileUrl {
+                        return true
+                    }
                 }
                 return false
             }
@@ -219,15 +231,8 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PosterCell", for: indexPath)
         let posterCell = cell as! PosterCell
         
-        let movie = displayedContents[indexPath.row]
-        let key = contentType == ACTORS ? "profile_path" : "poster_path"
-        
-        if let path = movie[key] as? String {
-            posterCell.setPosterImage(path: path)
-        }
-        else {
-            print("Doesn't have image")
-        }
+        let content = displayedContents[indexPath.row]        
+        posterCell.content = content
         
         return posterCell
     }
@@ -239,20 +244,20 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "DetailViewController") as! DetailViewController
             if contentType == MOVIES {
-                vc.movie = content
+                vc.movie = content as? Movie
             }
             else if contentType == TV_SHOWS {
-                vc.tvShow = content
+                vc.tvShow = content as? TVShow
             }
             vc.contentType = contentType
             self.navigationController?.pushViewController(vc, animated: true)
         }
         else {
-            let content = displayedContents[indexPath.row]
+            let content = displayedContents[indexPath.row] as! Actor
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "ActorDetailViewController") as! ActorDetailViewController
             
-            if let knownFor = content["known_for"] as? [[String:Any]] {
+            if let knownFor = content.knownFor {
                 let kf = knownFor.filter { (content: [String:Any]) in
                     if let _ = content["poster_path"] as? String {
                         return true
@@ -261,9 +266,7 @@ class ContentsSearchController: UIViewController, UICollectionViewDataSource,
                 }
                 vc.knownFor = kf
             }
-            if let id = content["id"] as? Int {
-                vc.id = id
-            }
+            vc.id = content.id
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

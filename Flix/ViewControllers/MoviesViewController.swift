@@ -9,8 +9,6 @@
 import UIKit
 import AlamofireImage
 
-let imageTmdb = "https://image.tmdb.org/t/p/w500"
-
 class MoviesViewController: UIViewController, UITableViewDataSource,
                             UITableViewDelegate, UISearchBarDelegate {
     
@@ -18,8 +16,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource,
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var movies: [[String:Any]] = []
-    var filteredMovies: [[String:Any]] = []
+    var movies: [Movie] = []
+    var filteredMovies: [Movie] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,30 +52,24 @@ class MoviesViewController: UIViewController, UITableViewDataSource,
     }
     
     func fetchMovies(completion: (() -> Void)? = nil) {
-        let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=\(api_key)")!
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        
         activityIndicator.startAnimating()
         self.shadeView(shaded: true)
         
-        let task = session.dataTask(with: request) { (data, response, error) in
-            // This will run when the network request returns
+        APIManager().nowPlayingMovies { (movies, error) in
             if let error = error {
                 print(error.localizedDescription)
                 self.displayRequestErrorAlert()
-                completion?()
-            } else if let data = data {
-                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                self.movies = dataDictionary["results"] as! [[String:Any]]
+            }
+            else if let movies = movies {
+                self.movies = movies
+                self.filteredMovies = movies
+                self.tableView.reloadData()
+                
                 self.shadeView(shaded: false)
                 self.activityIndicator.stopAnimating()
-                self.filteredMovies = self.movies
-                completion?()
-                self.tableView.reloadData()
             }
+            completion?()
         }
-        task.resume()
     }
     
     func displayRequestErrorAlert() {
@@ -102,13 +94,8 @@ class MoviesViewController: UIViewController, UITableViewDataSource,
         let movieCell = cell as! MovieCell
         
         let movie = filteredMovies[indexPath.row]
-        if let title = movie["title"] as? String,
-            let overview = movie["overview"] as? String,
-            let path = movie["poster_path"] as? String {
-            movieCell.setTitle(title: title)
-            movieCell.setOverview(overview: overview)
-            movieCell.setPosterImage(path: path)
-        }
+        
+        movieCell.movie = movie
         
         return cell
     }
@@ -128,10 +115,10 @@ class MoviesViewController: UIViewController, UITableViewDataSource,
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         filteredMovies = searchText.isEmpty ? movies : movies.filter
-            { (movie: [String:Any]) -> Bool in
-                let title = movie["title"] as? String
-                return title?.range(of: searchText, options: .caseInsensitive,
-                                    range: nil, locale: nil) != nil
+            { (movie: Movie) -> Bool in
+                let title = movie.title
+                return title.range(of: searchText, options: .caseInsensitive,
+                                   range: nil, locale: nil) != nil
         }
         self.tableView.reloadData()
     }
@@ -150,35 +137,5 @@ class MoviesViewController: UIViewController, UITableViewDataSource,
         // Dispose of any resources that can be recreated.
     }
 
-}
-
-class MovieCell: UITableViewCell {
-    
-    @IBOutlet weak var posterImageView: UIImageView!
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var overviewLabel: UILabel!
-    
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-    }
-    
-    func setTitle(title: String) {
-        titleLabel.text = title
-    }
-    
-    func setOverview(overview: String) {
-        overviewLabel.text = overview
-    }
-    
-    func setPosterImage(path: String) {
-        let urlS = imageTmdb + path
-        let url = URL(string: urlS)
-        posterImageView.af_setImage(withURL: url!)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
 }
 

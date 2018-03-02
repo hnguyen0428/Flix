@@ -15,7 +15,7 @@ class SuperheroViewController: UIViewController, UICollectionViewDelegate,
     
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var movies: [[String:Any]] = []
+    var movies: [Movie] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,21 +37,15 @@ class SuperheroViewController: UIViewController, UICollectionViewDelegate,
     
     
     func fetchMovies() {
-        let url = URL(string: "https://api.themoviedb.org/3/movie/284053/similar?api_key=\(api_key)")!
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        
-        let task = session.dataTask(with: request) { (data, response, error) in
-            // This will run when the network request returns
+        APIManager().similarMovies(id: 284053) { (movies, error) in
             if let error = error {
                 print(error.localizedDescription)
-            } else if let data = data {
-                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                self.movies = dataDictionary["results"] as! [[String:Any]]
+            }
+            else if let movies = movies {
+                self.movies = movies
                 self.collectionView.reloadData()
             }
         }
-        task.resume()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -68,9 +62,7 @@ class SuperheroViewController: UIViewController, UICollectionViewDelegate,
         let posterCell = cell as! PosterCell
         let movie = movies[indexPath.row]
         
-        if let posterPath = movie["poster_path"] as? String {
-            posterCell.setPosterImage(path: posterPath)
-        }
+        posterCell.content = movie
         
         return posterCell
     }

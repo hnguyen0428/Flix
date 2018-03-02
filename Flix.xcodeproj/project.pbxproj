@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		1B5D4412AE3B761745E2439D /* Pods_FlixUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BBA4B3D8CF046F8CB8E81696 /* Pods_FlixUITests.framework */; };
 		475078692034523B00CE2F01 /* ScrollingLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475078682034523B00CE2F01 /* ScrollingLabel.swift */; };
+		47B4FA452047C21C0022E235 /* Movie.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B4FA442047C21C0022E235 /* Movie.swift */; };
+		47B4FA472048D0F60022E235 /* TVShow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B4FA462048D0F60022E235 /* TVShow.swift */; };
+		47B4FA492048D3A70022E235 /* Actor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B4FA482048D3A70022E235 /* Actor.swift */; };
+		47B4FA4B2048D55B0022E235 /* APIObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B4FA4A2048D55B0022E235 /* APIObject.swift */; };
+		47B4FA4D2048DC840022E235 /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B4FA4C2048DC840022E235 /* MovieCell.swift */; };
+		47B4FA532048DEFA0022E235 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B4FA522048DEFA0022E235 /* APIManager.swift */; };
 		47B995B02021520800931EED /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B995AF2021520800931EED /* AppDelegate.swift */; };
 		47B995B22021520800931EED /* MoviesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B995B12021520800931EED /* MoviesViewController.swift */; };
 		47B995B52021520800931EED /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47B995B32021520800931EED /* Main.storyboard */; };
@@ -50,6 +56,12 @@
 		2E8339058215D5F2D6DEAF8E /* Pods-FlixTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlixTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FlixTests/Pods-FlixTests.debug.xcconfig"; sourceTree = "<group>"; };
 		34937E572E2D983F8542984B /* Pods-Flix.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Flix.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Flix/Pods-Flix.debug.xcconfig"; sourceTree = "<group>"; };
 		475078682034523B00CE2F01 /* ScrollingLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollingLabel.swift; sourceTree = "<group>"; };
+		47B4FA442047C21C0022E235 /* Movie.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movie.swift; sourceTree = "<group>"; };
+		47B4FA462048D0F60022E235 /* TVShow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVShow.swift; sourceTree = "<group>"; };
+		47B4FA482048D3A70022E235 /* Actor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actor.swift; sourceTree = "<group>"; };
+		47B4FA4A2048D55B0022E235 /* APIObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIObject.swift; sourceTree = "<group>"; };
+		47B4FA4C2048DC840022E235 /* MovieCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCell.swift; sourceTree = "<group>"; };
+		47B4FA522048DEFA0022E235 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		47B995AC2021520800931EED /* Flix.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Flix.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		47B995AF2021520800931EED /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		47B995B12021520800931EED /* MoviesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesViewController.swift; sourceTree = "<group>"; };
@@ -107,6 +119,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		47B4FA4E2048DEAD0022E235 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				47B4FA442047C21C0022E235 /* Movie.swift */,
+				47B4FA462048D0F60022E235 /* TVShow.swift */,
+				47B4FA482048D3A70022E235 /* Actor.swift */,
+				47B4FA4A2048D55B0022E235 /* APIObject.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		47B4FA502048DEC00022E235 /* UI Components */ = {
+			isa = PBXGroup;
+			children = (
+				47C5DD972032666C00B5F5F6 /* PosterCell.swift */,
+				475078682034523B00CE2F01 /* ScrollingLabel.swift */,
+				47B4FA4C2048DC840022E235 /* MovieCell.swift */,
+			);
+			path = "UI Components";
+			sourceTree = "<group>";
+		};
+		47B4FA512048DEE60022E235 /* API Client */ = {
+			isa = PBXGroup;
+			children = (
+				47B4FA522048DEFA0022E235 /* APIManager.swift */,
+			);
+			path = "API Client";
+			sourceTree = "<group>";
+		};
 		47B995A32021520800931EED = {
 			isa = PBXGroup;
 			children = (
@@ -132,15 +173,16 @@
 		47B995AE2021520800931EED /* Flix */ = {
 			isa = PBXGroup;
 			children = (
+				47B4FA512048DEE60022E235 /* API Client */,
+				47B4FA502048DEC00022E235 /* UI Components */,
+				47B4FA4E2048DEAD0022E235 /* Models */,
 				47F3FA9F2033BD0000857207 /* ViewControllers */,
 				47B995AF2021520800931EED /* AppDelegate.swift */,
 				47B995B32021520800931EED /* Main.storyboard */,
 				47B995B62021520800931EED /* Assets.xcassets */,
 				47B995B82021520800931EED /* LaunchScreen.storyboard */,
 				47B995BB2021520800931EED /* Info.plist */,
-				47C5DD972032666C00B5F5F6 /* PosterCell.swift */,
 				47F201552032CC6700F756B2 /* Extensions.swift */,
-				475078682034523B00CE2F01 /* ScrollingLabel.swift */,
 			);
 			path = Flix;
 			sourceTree = "<group>";
@@ -495,13 +537,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47B4FA472048D0F60022E235 /* TVShow.swift in Sources */,
 				47EC6ACE202A84FF0075426F /* SuperheroViewController.swift in Sources */,
 				47F201562032CC6700F756B2 /* Extensions.swift in Sources */,
+				47B4FA492048D3A70022E235 /* Actor.swift in Sources */,
+				47B4FA4B2048D55B0022E235 /* APIObject.swift in Sources */,
+				47B4FA452047C21C0022E235 /* Movie.swift in Sources */,
 				47EC6ACC202A7F1B0075426F /* DetailViewController.swift in Sources */,
 				47F201582032CCA700F756B2 /* ActorDetailViewController.swift in Sources */,
 				47B995B22021520800931EED /* MoviesViewController.swift in Sources */,
 				47C5DD96203264F000B5F5F6 /* ContentsSearchController.swift in Sources */,
+				47B4FA4D2048DC840022E235 /* MovieCell.swift in Sources */,
 				47C5DD942031920500B5F5F6 /* TrailerViewController.swift in Sources */,
+				47B4FA532048DEFA0022E235 /* APIManager.swift in Sources */,
 				475078692034523B00CE2F01 /* ScrollingLabel.swift in Sources */,
 				47C5DD982032666C00B5F5F6 /* PosterCell.swift in Sources */,
 				47B995B02021520800931EED /* AppDelegate.swift in Sources */,

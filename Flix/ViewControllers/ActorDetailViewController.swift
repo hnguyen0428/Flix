@@ -26,7 +26,7 @@ class ActorDetailViewController: UIViewController, UICollectionViewDataSource,
     var id: Int?
     var knownFor: [[String:Any]] = []
     
-    var actorInfo: [String:Any]?
+    var actor: Actor?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,13 +41,10 @@ class ActorDetailViewController: UIViewController, UICollectionViewDataSource,
         
         calculateCellSize()
         
-        fetchActorInfo { info in
-            if let info = info {
-                if let name = info["name"] as? String {
-                    self.nameLabel.text = name
-                }
-                
-                if var birthday = info["birthday"] as? String {
+        fetchActorInfo { actor in
+            if let actor = actor {
+                self.nameLabel.text = actor.name
+                if var birthday = actor.birthday {
                     let formatter = DateFormatter()
                     formatter.dateFormat = "yyyy-MM-dd"
                     let date = formatter.date(from: birthday)
@@ -56,18 +53,16 @@ class ActorDetailViewController: UIViewController, UICollectionViewDataSource,
                     self.birthdayLabel.text = birthday
                 }
                 
-                if let pob = info["place_of_birth"] as? String {
+                if let pob = actor.placeOfBirth {
                     self.pobLabel.text = pob
                     self.pobLabel.sizeToFit()
                 }
                 
-                if let path = info["profile_path"] as? String {
-                    let urlS = imageTmdb + path
-                    let url = URL(string: urlS)!
+                if let url = actor.profileUrl {
                     self.profileImageView.af_setImage(withURL: url)
                 }
                 
-                if let biography = info["biography"] as? String {
+                if let biography = actor.biography {
                     self.biographyTextView.text = biography
                 }
             }
@@ -98,26 +93,19 @@ class ActorDetailViewController: UIViewController, UICollectionViewDataSource,
         }
     }
     
-    func fetchActorInfo(completion: (([String:Any]?) -> Void)? = nil) {
-        let url = URL(string: "https://api.themoviedb.org/3/person/\(id!)?api_key=\(api_key)&language=en-US")!
-        
-        let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
-        let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
-        
+    func fetchActorInfo(completion: ((Actor?) -> Void)? = nil) {
         self.shadeView(shaded: true)
-        let task = session.dataTask(with: request) { (data, response, error) in
-            // This will run when the network request returns
+        APIManager().actorDetail(id: self.id!) { (actor, error) in
             if let error = error {
                 print(error.localizedDescription)
                 completion?(nil)
-            } else if let data = data {
-                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
-                self.actorInfo = dataDictionary
-                self.shadeView(shaded: false)
-                completion?(dataDictionary)
             }
+            else if let actor = actor {
+                self.actor = actor
+                completion?(self.actor)
+            }
+            self.shadeView(shaded: false)
         }
-        task.resume()
     }
     
     
@@ -129,11 +117,11 @@ class ActorDetailViewController: UIViewController, UICollectionViewDataSource,
             
             if let type = content["media_type"] as? String {
                 if type == "movie" {
-                    vc.movie = content
+                    vc.movie = Movie(dictionary: content)
                     vc.contentType = 0
                 }
                 else if type == "tv" {
-                    vc.tvShow = content
+                    vc.tvShow = TVShow(dictionary: content)
                     vc.contentType = 1
                 }
             }
